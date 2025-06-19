@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.diseasedetector.model.DiseaseViewModel
 import com.example.diseasedetector.ui.screens.AnalysisScreen
+import com.example.diseasedetector.ui.screens.ChatScreen
 import com.example.diseasedetector.ui.screens.MainScreen
 import com.example.diseasedetector.ui.screens.SplashScreen
 
@@ -26,11 +27,15 @@ fun AppNavHost(
         }
 
         composable(NavigationItem.MainScreen.route) {
-            MainScreen(navController)
+            MainScreen(navController, viewModel)
         }
 
         composable(NavigationItem.AnalysisScreen.route) {
             AnalysisScreen(navController)
+        }
+
+        composable(NavigationItem.ChatScreen.route) {
+            ChatScreen(navController, viewModel)
         }
 
     }

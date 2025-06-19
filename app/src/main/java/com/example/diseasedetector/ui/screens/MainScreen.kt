@@ -13,15 +13,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -30,11 +34,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diseasedetector.R
+import com.example.diseasedetector.model.DiseaseViewModel
 import com.example.diseasedetector.ui.util.RayCard
+import com.example.diseasedetector.ui.util.SplitFloatingButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavHostController) {
+fun MainScreen(navController: NavHostController, viewModel: DiseaseViewModel) {
+    val isChatSelected by viewModel.isChatSelected.collectAsState()
+    LaunchedEffect(Unit) {
+        viewModel.initializeIfNeeded(isChatStart = false)
+    }
     Scaffold(
         containerColor = Color.White,
         topBar = {
@@ -44,7 +54,9 @@ fun MainScreen(navController: NavHostController) {
                     Image(
                         painter = painterResource(id = R.drawable.docc_logo_horizonal),
                         contentDescription = "Logo",
-                        modifier = Modifier.width(147.dp).height(50.dp)
+                        modifier = Modifier
+                            .width(147.dp)
+                            .height(50.dp)
                     )
                 },
                 actions = {
@@ -61,7 +73,21 @@ fun MainScreen(navController: NavHostController) {
                     actionIconContentColor = Color.Black
                 )
             )
-        }
+        },
+        floatingActionButton = {
+            SplitFloatingButton(
+                isChatSelected = isChatSelected == true,
+                onChatClick = {
+                    navController.navigate("chat")
+                    viewModel.setChatSelected(true)
+                },
+                onAnalysisClick = {
+                    navController.navigate("main")
+                    viewModel.setChatSelected(false)
+                }
+            )
+        },
+        floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
         Column(
             modifier = Modifier

@@ -24,8 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun RayCard(img: Int, title: String) {
+fun RayCard(img: Int, title: String, onClick: () -> Unit) {
     Card(
+        onClick = onClick ,
         modifier = Modifier
             .width(160.dp)
             .height(200.dp),

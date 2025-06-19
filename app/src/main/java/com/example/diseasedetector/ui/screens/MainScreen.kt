@@ -1,5 +1,6 @@
 package com.example.diseasedetector.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +43,7 @@ import com.example.diseasedetector.ui.util.SplitFloatingButton
 @Composable
 fun MainScreen(navController: NavHostController, viewModel: DiseaseViewModel) {
     val isChatSelected by viewModel.isChatSelected.collectAsState()
+    val organs = viewModel.organList
     LaunchedEffect(Unit) {
         viewModel.initializeIfNeeded(isChatStart = false)
     }
@@ -94,21 +96,17 @@ fun MainScreen(navController: NavHostController, viewModel: DiseaseViewModel) {
                 .fillMaxSize()
                 .background(Color.White)
                 .padding(innerPadding)
-                .padding(horizontal = 10.dp, vertical = 10.dp)
+                .padding(10.dp)
         ) {
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
                 Text("X-ray analysis", fontSize = 30.sp, fontWeight = FontWeight.W600)
             }
-
-            val organItems: List<Pair<Int, String>> = listOf(
-                Pair(R.drawable.or_lung, "Lung"),
-                Pair(R.drawable.or_kidney, "Kidney"),
-                Pair(R.drawable.or_liver, "Liver"),
-                Pair(R.drawable.or_heart, "Heart"),
-                Pair(R.drawable.or_brain, "Brain"),
-                Pair(R.drawable.or_hand, "Hand"),
-            )
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -117,8 +115,13 @@ fun MainScreen(navController: NavHostController, viewModel: DiseaseViewModel) {
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(organItems) { (img, title) ->
-                    RayCard(img = img, title = title)
+                items(organs) { organ ->
+                    RayCard(
+                        img = organ.imageResId,
+                        title = organ.name,
+                        onClick = {
+                            navController.navigate("organ/${organ.id}")
+                        })
                 }
             }
 

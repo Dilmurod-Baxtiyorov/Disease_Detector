@@ -29,12 +29,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diseasedetector.model.DiseaseViewModel
 import com.example.diseasedetector.ui.util.ChoiceBtn
+import com.example.diseasedetector.ui.util.ImageActionBtn
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalysisScreen(navController: NavHostController, organId: Int, viewModel: DiseaseViewModel) {
     val organ = viewModel.organList.find { it.id == organId }
     var selectedDisease by remember { mutableStateOf<String?>(null) }
+    var isTakePictureSelected by remember { mutableStateOf(false) }
+    var isUploadPictureSelected by remember { mutableStateOf(false) }
 
     Scaffold(topBar = {
         TopAppBar(
@@ -87,6 +90,19 @@ fun AnalysisScreen(navController: NavHostController, organId: Int, viewModel: Di
                             onClick = { selectedDisease = disease }
                         )
                     }
+
+                    ImageActionBtn(
+                        isTakePictureSelected = isTakePictureSelected,
+                        isUploadPictureSelected = isUploadPictureSelected,
+                        onTakePictureClick = {
+                            isTakePictureSelected = true
+                            isUploadPictureSelected = false
+                        },
+                        onUploadPictureClick = {
+                            isTakePictureSelected = false
+                            isUploadPictureSelected = true
+                        }
+                    )
                 }
             } else {
                 Text("Organ not found", modifier = Modifier.padding(16.dp))

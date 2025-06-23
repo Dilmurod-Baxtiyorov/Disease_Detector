@@ -42,7 +42,7 @@ class DiseaseViewModel(application: Application) : AndroidViewModel(application)
             id = 6,
             name = "Hand",
             imageResId = R.drawable.or_hand,
-            diseases = listOf("Arthritis", "Carpal Tunnel Syndrome", "Tendonitis")
+            diseases = listOf("Arthritis", "Carpal Tunnel Syndrome", "Tendinitis")
         )
     )
 

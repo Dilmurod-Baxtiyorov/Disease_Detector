@@ -11,7 +11,7 @@ activityCompose = "1.10.1"
 composeBom = "2024.04.01"
 googleGmsGoogleServices = "4.4.2"
 firebaseAuth = "23.2.1"
-navigationCompose = "2.9.0"
+navigationCompose = "2.9.1"
 recaptcha = "18.8.0-beta01"
 firebaseFirestoreKtx = "25.1.4"
 

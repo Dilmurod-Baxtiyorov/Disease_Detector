@@ -31,10 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -45,7 +42,7 @@ import com.example.diseasedetector.ui.state.UiEvent
 import com.example.diseasedetector.ui.theme.Purple
 import com.example.diseasedetector.viewmodel.AuthViewModel
 import com.example.diseasedetector.viewmodel.SignupViewModel
-import com.example.handybook.state.UiState
+import com.example.diseasedetector.ui.state.UiState
 
 @Composable
 fun Signup(

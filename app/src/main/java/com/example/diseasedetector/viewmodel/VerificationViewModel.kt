@@ -16,7 +16,7 @@ import com.example.diseasedetector.model.User
 import com.example.diseasedetector.navigation.Routes
 import com.example.diseasedetector.repository.AuthRepository
 import com.example.diseasedetector.ui.state.UiEvent
-import com.example.handybook.state.UiState
+import com.example.diseasedetector.ui.state.UiState
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth

@@ -53,7 +53,7 @@ import com.example.diseasedetector.R
 import com.example.diseasedetector.ui.state.UiEvent
 import com.example.diseasedetector.ui.theme.Purple
 import com.example.diseasedetector.viewmodel.VerificationViewModel
-import com.example.handybook.state.UiState
+import com.example.diseasedetector.ui.state.UiState
 import kotlinx.coroutines.delay
 
 @Composable

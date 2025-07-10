@@ -8,10 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.diseasedetector.model.User
 import com.example.diseasedetector.repository.AuthRepository
 import com.example.diseasedetector.ui.state.UiEvent
-import com.example.handybook.state.UiState
+import com.example.diseasedetector.ui.state.UiState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableSharedFlow

@@ -30,7 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -38,7 +37,7 @@ import com.example.diseasedetector.R
 import com.example.diseasedetector.ui.state.UiEvent
 import com.example.diseasedetector.ui.theme.Purple
 import com.example.diseasedetector.viewmodel.NewPasswordViewModel
-import com.example.handybook.state.UiState
+import com.example.diseasedetector.ui.state.UiState
 
 @Composable
 fun NewPassword(

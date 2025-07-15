@@ -1,10 +1,11 @@
-package com.example.diseasedetector.model
+package com.example.diseasedetector.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import com.example.diseasedetector.R
+import com.example.diseasedetector.model.OrganInfo
 
 class DiseaseViewModel(application: Application) : AndroidViewModel(application) {
     private val _organs = listOf(

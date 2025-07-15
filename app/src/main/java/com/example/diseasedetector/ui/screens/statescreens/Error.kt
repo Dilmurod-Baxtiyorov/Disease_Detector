@@ -1,4 +1,4 @@
-package com.example.diseasedetector.ui.screens
+package com.example.diseasedetector.ui.screens.statescreens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

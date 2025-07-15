@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.diseasedetector.model.User
+import com.example.diseasedetector.navigation.Routes
 import com.example.diseasedetector.repository.AuthRepository
 import com.example.diseasedetector.ui.state.UiEvent
 import com.example.diseasedetector.ui.state.UiState
@@ -95,10 +96,9 @@ class VerificationViewModel(
                     if(fullName != "null") {
                         saveUser(User(uid.toString(), fullName!!, phoneNumber))
                     }else{
-                        /*Navigate to main screen*/
                         Log.d(TAG, "signup: Successful login")
                     }
-                    _uiState.value = UiState.Success
+                    _event.emit(UiEvent.Navigate(Routes.Main.name))
                 }
             } catch (e: Exception) {
                 _uiState.value = UiState.Error(e.localizedMessage ?: "Unknown error")

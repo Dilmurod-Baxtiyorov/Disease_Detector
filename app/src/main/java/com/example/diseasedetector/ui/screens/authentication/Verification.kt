@@ -1,4 +1,4 @@
-package com.example.diseasedetector.ui.screens
+package com.example.diseasedetector.ui.screens.authentication
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -50,6 +50,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diseasedetector.R
+import com.example.diseasedetector.ui.screens.statescreens.Error
+import com.example.diseasedetector.ui.screens.statescreens.Loading
 import com.example.diseasedetector.ui.state.UiEvent
 import com.example.diseasedetector.ui.theme.Purple
 import com.example.diseasedetector.viewmodel.VerificationViewModel

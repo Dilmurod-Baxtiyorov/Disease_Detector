@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diseasedetector.R
-import com.example.diseasedetector.model.DiseaseViewModel
+import com.example.diseasedetector.viewmodel.DiseaseViewModel
 import com.example.diseasedetector.ui.util.SplitFloatingButton
 
 @OptIn(ExperimentalMaterial3Api::class)

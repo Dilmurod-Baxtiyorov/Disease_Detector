@@ -1,4 +1,4 @@
-package com.example.diseasedetector.ui.screens
+package com.example.diseasedetector.ui.screens.authentication
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -39,6 +39,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.diseasedetector.R
 import com.example.diseasedetector.navigation.Routes
+import com.example.diseasedetector.ui.screens.statescreens.Error
+import com.example.diseasedetector.ui.screens.statescreens.Loading
 import com.example.diseasedetector.ui.state.UiEvent
 import com.example.diseasedetector.ui.theme.Purple
 import com.example.diseasedetector.viewmodel.AuthViewModel
@@ -65,6 +67,14 @@ fun Login(
 
     LaunchedEffect(Unit) {
         authVM.event.collect{event ->
+            when(event){
+                is UiEvent.Navigate -> navController.navigate(event.route)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        vm.event.collect{event ->
             when(event){
                 is UiEvent.Navigate -> navController.navigate(event.route)
             }

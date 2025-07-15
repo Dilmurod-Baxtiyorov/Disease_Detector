@@ -99,7 +99,6 @@ class AuthViewModel(private val auth: FirebaseAuth, private val db: FirebaseFire
         override fun onVerificationCompleted(credential: PhoneAuthCredential) {
             Log.d(TAG, "onVerificationCompleted:$credential")
             viewModelScope.launch {
-                _uiState.value = UiState.Success
                 storedCredential = credential
                 _event.emit(UiEvent.Navigate("${Routes.Verification.name}/${phoneNumber.value}/${null}/${fullName.value}"))
             }
@@ -128,7 +127,6 @@ class AuthViewModel(private val auth: FirebaseAuth, private val db: FirebaseFire
 
             viewModelScope.launch {
                 _event.emit(UiEvent.Navigate("${Routes.Verification.name}/${phoneNumber.value}/$verificationId/${fullName.value}"))
-                _uiState.value = UiState.Success
             }
 
         }

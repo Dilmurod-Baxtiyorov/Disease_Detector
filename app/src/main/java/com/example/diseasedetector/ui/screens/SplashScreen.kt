@@ -21,7 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.diseasedetector.R
-import com.example.diseasedetector.navigation.NavigationItem
+import com.example.diseasedetector.navigation.Routes
 import kotlinx.coroutines.delay
 
 @Composable
@@ -39,7 +39,7 @@ fun SplashScreen(navController: NavHostController) {
             animationSpec = tween(durationMillis = 1000)
         )
         delay(2000L)
-        navController.navigate(NavigationItem.MainScreen.route) //change to login or sing up
+        navController.navigate(Routes.Signup.name) //change to login or sing up
     }
 
     Scaffold { innerPadding ->

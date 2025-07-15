@@ -1,19 +1,20 @@
 package com.example.diseasedetector.navigation
 
+import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.diseasedetector.model.DiseaseViewModel
+import com.example.diseasedetector.viewmodel.DiseaseViewModel
 import com.example.diseasedetector.ui.screens.AnalysisScreen
 import com.example.diseasedetector.ui.screens.ChatScreen
 import com.example.diseasedetector.ui.screens.MainScreen
 import com.example.diseasedetector.ui.screens.SplashScreen
-import com.example.diseasedetector.ui.screens.Login
-import com.example.diseasedetector.ui.screens.Signup
-import com.example.diseasedetector.ui.screens.Verification
+import com.example.diseasedetector.ui.screens.authentication.Login
+import com.example.diseasedetector.ui.screens.authentication.Signup
+import com.example.diseasedetector.ui.screens.authentication.Verification
 import com.example.diseasedetector.viewmodel.AuthViewModel
 import com.example.diseasedetector.viewmodel.LoginViewModel
 import com.example.diseasedetector.viewmodel.SignupViewModel
@@ -27,14 +28,15 @@ fun AppNavHost(
     navController: NavHostController,
     auth: FirebaseAuth,
     db: FirebaseFirestore,
-    startDestination: String = NavigationItem.SplashScreen.route,
-    viewModel: DiseaseViewModel = viewModel()
+    startDestination: String = Routes.Splash.name,
+    application: Application
 ){
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
         val authViewModel = AuthViewModel(auth, db)
+
         composable(Routes.Login.name){
             authViewModel.clearWarning()
             val loginViewModel: LoginViewModel = viewModel(
@@ -100,23 +102,24 @@ fun AppNavHost(
             )
         }
         
-        composable(NavigationItem.SplashScreen.route) {
+        composable(Routes.Splash.name) {
             SplashScreen(navController)
         }
+        val diseaseViewModel = DiseaseViewModel(application = application)
 
-        composable(NavigationItem.MainScreen.route) {
-            MainScreen(navController, viewModel)
+        composable(Routes.Main.name) {
+            MainScreen(navController, diseaseViewModel)
         }
 
-        composable("organ/{id}") { backStackEntry ->
+        composable("${Routes.Analysis.name}/{id}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")?.toIntOrNull()
             if (id != null) {
-                AnalysisScreen(navController = navController, organId = id, viewModel = viewModel)
+                AnalysisScreen(navController = navController, organId = id, viewModel = diseaseViewModel)
             }
         }
 
-        composable(NavigationItem.ChatScreen.route) {
-            ChatScreen(navController, viewModel)
+        composable(Routes.Chat.name) {
+            ChatScreen(navController, diseaseViewModel)
         }
     }
 }

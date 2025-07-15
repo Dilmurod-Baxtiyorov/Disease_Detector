@@ -1,23 +1,25 @@
 package com.example.diseasedetector.viewmodel
 
 import android.content.ContentValues.TAG
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.diseasedetector.model.User
+import com.example.diseasedetector.navigation.Routes
 import com.example.diseasedetector.repository.AuthRepository
+import com.example.diseasedetector.ui.state.UiEvent
 import com.example.diseasedetector.ui.state.UiState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -27,6 +29,9 @@ class SignupViewModel(private val auth: FirebaseAuth, private val db: FirebaseFi
 
     private var _uiState = MutableStateFlow<UiState>(UiState.Idle)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    private val _event = MutableSharedFlow<UiEvent>()
+    val  event = _event.asSharedFlow()
 
     private val _user = MutableStateFlow<FirebaseUser?>(null)
     val user: StateFlow<FirebaseUser?> = _user.asStateFlow()
@@ -113,7 +118,7 @@ class SignupViewModel(private val auth: FirebaseAuth, private val db: FirebaseFi
         }
     }
 
-    fun isEmailVerified(context: Context){
+    fun isEmailVerified() {
         viewModelScope.launch {
             var boolean = true
             while (boolean) {
@@ -128,9 +133,7 @@ class SignupViewModel(private val auth: FirebaseAuth, private val db: FirebaseFi
                             identifier = identifier.value,
                         )
                     )
-                    Toast.makeText(context, "Successful reg", Toast.LENGTH_SHORT).show()
-                    _uiState.value = UiState.Success
-                    /*Navigate to main screen*/
+                    _event.emit(UiEvent.Navigate(Routes.Main.name))
                     boolean = false
                 }else{
                     Log.d(TAG, "isEmailVerified: Failed to verify email")

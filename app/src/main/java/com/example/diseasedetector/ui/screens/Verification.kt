@@ -202,12 +202,8 @@ fun Verification(
             is UiState.Loading -> {
                 Loading()
             }
-            else -> {
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Text("$uiState")
-                }
+            is UiState.Error -> {
+                Error((uiState as UiState.Error).msg)
             }
         }
     }

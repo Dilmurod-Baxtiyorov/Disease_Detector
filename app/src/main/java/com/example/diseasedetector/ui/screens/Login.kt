@@ -59,7 +59,7 @@ fun Login(
             vm.uiState
         }
 
-    val phoneNumber by vm.phoneNumber.collectAsState()
+    val identifier by vm.identifier.collectAsState()
     val password by vm.password.collectAsState()
 
 
@@ -79,14 +79,23 @@ fun Login(
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 Text("Welcome!", fontSize = 40.sp, fontWeight = FontWeight.W600)
-                Spacer(modifier = Modifier.height(64.dp))
+                Spacer(modifier = Modifier.height(48.dp))
                 Image(painterResource(R.drawable.login), null, contentScale = ContentScale.Crop, modifier = Modifier.size(200.dp))
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(4.dp))
+                if(vm.warning == "email"){
+                    Text(
+                        text = "We have sent email to you\nFollow the link in the email to reset password\n",
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.fillMaxWidth(0.8f),
+                        letterSpacing = 0.5.sp
+                    )
+                }
                 OutlinedTextField(
-                    value = phoneNumber,
-                    onValueChange = vm::onPhoneNumberChange,
+                    value = identifier,
+                    onValueChange = vm::onIdentifierChange,
                     placeholder = {
-                        Text("Phone number", color = Color.Gray)
+                        Text("Phone number/Email", color = Color.Gray)
                     },
                     leadingIcon = {
                         Icon(Icons.Outlined.Call, null, tint = Color.Gray, modifier = Modifier
@@ -101,27 +110,51 @@ fun Login(
                     ),
                     modifier = Modifier.fillMaxWidth(0.8f)
                 )
-                if(vm.warning == "empty"){
-                    Text(
-                        text = "Enter your phone number",
-                        color = Color.Red,
-                        fontSize = 12.sp,
-                        modifier = Modifier.fillMaxWidth(0.8f),
-                        letterSpacing = 0.5.sp)
-                }else if(vm.warning == "wrong"){
+                if(authVM.warning == "exist"){
                     Text(
                         text = "This phone number is not registered",
                         color = Color.Red,
                         fontSize = 12.sp,
                         modifier = Modifier.fillMaxWidth(0.8f),
                         letterSpacing = 0.5.sp)
+                }else {
+                    when (vm.warning) {
+                        "empty" -> {
+                            Text(
+                                text = "Enter your phone number",
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.fillMaxWidth(0.8f),
+                                letterSpacing = 0.5.sp
+                            )
+                        }
+                        "wrong" -> {
+                            Text(
+                                text = "This email is not registered",
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.fillMaxWidth(0.8f),
+                                letterSpacing = 0.5.sp
+                            )
+                        }
+
+                        "phone" -> {
+                            Text(
+                                text = "Incorrect phone number format",
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.fillMaxWidth(0.8f),
+                                letterSpacing = 0.5.sp
+                            )
+                        }
+                    }
                 }
                 Spacer(modifier = Modifier.height(24.dp))
                 OutlinedTextField(
                     value = password,
                     onValueChange = vm::onPasswordChange,
                     placeholder = {
-                        Text("Password", color = Color.Gray)
+                        Text("Password(only for email)", color = Color.Gray)
                     },
                     leadingIcon = {
                         Icon(Icons.Outlined.Lock, null, tint = Color.Gray, modifier = Modifier
@@ -144,7 +177,7 @@ fun Login(
                         modifier = Modifier.fillMaxWidth(0.8f),
                         letterSpacing = 0.5.sp
                     )
-                }else if(vm.warning == "empty"){
+                }else if(vm.warning == "blank"){
                     Text(
                         text = "Enter your password",
                         color = Color.Red,
@@ -159,17 +192,28 @@ fun Login(
                     textAlign = TextAlign.End,
                     modifier = Modifier
                         .clickable {
-                            if (vm.checkTextFields()){
-                                authVM.verifyPhoneNumber(context = context, phoneNumber)
+                            if (vm.checkIdentifier()){
+                                if(identifier.contains("@")){
+                                    vm.resetPassword(email = identifier)
+                                }
                             }
                         }
                         .fillMaxWidth(0.8f)
                 )
-                Spacer(modifier = Modifier.height(64.dp))
+                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(40.dp))
                 Button(
                     onClick = {
-                        if(vm.checkTextFields()){
-                            vm.login()
+                        if(vm.checkIdentifier()){
+                            if(identifier.contains("@")){
+                                if(vm.checkPassword()){
+                                    vm.login()
+                                }
+                            }else{
+                                if(vm.checkPhoneNumber()){
+                                    authVM.verifyPhoneNumber(context, identifier)
+                                }
+                            }
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -195,20 +239,14 @@ fun Login(
                         }
                     )
                 }
-                Spacer(modifier = Modifier.height(46.dp))
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
         is UiState.Loading -> {
             Loading()
         }
         is UiState.Error -> {
-            Column (
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                Text("${uiState.value}")
-            }
+            Error((uiState.value as UiState.Error).msg)
         }
     }
 }

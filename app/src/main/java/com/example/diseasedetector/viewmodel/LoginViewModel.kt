@@ -21,8 +21,8 @@ class LoginViewModel(auth: FirebaseAuth, db: FirebaseFirestore): ViewModel() {
     private val _uiState = mutableStateOf<UiState>(UiState.Idle)
     val uiState: State<UiState> get() = _uiState
 
-    private val _phoneNumber = MutableStateFlow("")
-    val phoneNumber: StateFlow<String> = _phoneNumber.asStateFlow()
+    private val _identifier = MutableStateFlow("")
+    val identifier: StateFlow<String> = _identifier.asStateFlow()
 
     private val _password = MutableStateFlow("")
     val password: StateFlow<String> = _password.asStateFlow()
@@ -30,30 +30,42 @@ class LoginViewModel(auth: FirebaseAuth, db: FirebaseFirestore): ViewModel() {
     var warning by mutableStateOf("")
         private set
 
-    fun onPhoneNumberChange(newPhoneNumber: String){
-        _phoneNumber.value = newPhoneNumber
+    fun onIdentifierChange(newIdentifier: String){
+        _identifier.value = newIdentifier
     }
 
     fun onPasswordChange(newPassword: String){
         _password.value = newPassword
     }
 
-    fun checkTextFields(): Boolean{
-        return !(password.value == "" || phoneNumber.value == "").also { warning = "empty" }
+    fun checkIdentifier(): Boolean{
+        return !(identifier.value == "").also { warning = if(it) "empty" else "" }
+    }
+
+    fun checkPassword(): Boolean{
+        return !(identifier.value == "").also { warning = if(it) "blank" else ""}
+    }
+
+    fun checkPhoneNumber(): Boolean{
+        if(!identifier.value.matches(Regex("^\\+998\\d{9}$"))){
+            warning = "phone"
+            return false
+        }
+        return true
     }
 
     fun login(){
         viewModelScope.launch {
             _uiState.value = UiState.Loading
-            val user = repository.getUserByPhoneNumber(phoneNumber.value)
+            val user = repository.getUserByIdentifier(identifier = identifier.value)
             if(user != null){
-                if(user.password == password.value){
+                val firebaseUser = repository.signInWithEmail(email = identifier.value, password = password.value)
+                if(firebaseUser != null){
                     /*navigate to the main screen*/
-                    _uiState.value = UiState.Success
                 }else{
                     warning = "password"
-                    _uiState.value = UiState.Idle
                 }
+                _uiState.value = UiState.Success
             }else{
                 warning = "wrong"
                 _uiState.value = UiState.Idle
@@ -61,5 +73,12 @@ class LoginViewModel(auth: FirebaseAuth, db: FirebaseFirestore): ViewModel() {
         }
     }
 
-
+    fun resetPassword(email: String){
+        viewModelScope.launch {
+            _uiState.value = UiState.Loading
+            repository.resetEmailPassword(email)
+            warning = "email"
+            _uiState.value = UiState.Idle
+        }
+    }
 }

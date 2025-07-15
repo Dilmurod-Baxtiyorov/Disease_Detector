@@ -13,7 +13,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.diseasedetector.model.User
-import com.example.diseasedetector.navigation.Routes
 import com.example.diseasedetector.repository.AuthRepository
 import com.example.diseasedetector.ui.state.UiEvent
 import com.example.diseasedetector.ui.state.UiState
@@ -41,7 +40,6 @@ class VerificationViewModel(
     private val verificationId: String?,
     private val phoneNumber: String,
     private val fullName: String?,
-    private val password: String?,
     private val credential: PhoneAuthCredential?,
     private val resendingToken: ForceResendingToken?,
 ): ViewModel() {
@@ -94,11 +92,11 @@ class VerificationViewModel(
             try {
                 val uid = repository.signup(getCredential)
                 if (uid != null) {
-                    if(fullName == "null") {
-                        _event.emit(UiEvent.Navigate("${Routes.NewPassword.name}/$phoneNumber"))
+                    if(fullName != "null") {
+                        saveUser(User(uid.toString(), fullName!!, phoneNumber))
                     }else{
-                        saveUser(User(uid.toString(), fullName!!, phoneNumber, password!!))
-
+                        /*Navigate to main screen*/
+                        Log.d(TAG, "signup: Successful login")
                     }
                     _uiState.value = UiState.Success
                 }
@@ -111,7 +109,7 @@ class VerificationViewModel(
     private fun saveUser(user: User){
         viewModelScope.launch {
             _uiState.value = UiState.Loading
-            if(repository.getUserByPhoneNumber(user.phoneNumber) == null){
+            if(repository.getUserByIdentifier(user.identifier) == null){
                 repository.saveUser(user)
             }
         }
@@ -120,7 +118,7 @@ class VerificationViewModel(
     fun verifyPhoneNumber(context: Context){
         viewModelScope.launch {
             _uiState.value = UiState.Loading
-            if (repository.getUserByPhoneNumber(phoneNumber) != null && fullName != null){
+            if (repository.getUserByIdentifier(phoneNumber) != null && fullName != null){
                 Toast.makeText(context, "This phone number is already registered!!", Toast.LENGTH_LONG).show()
             }else{
                 val options = PhoneAuthOptions.newBuilder(auth)

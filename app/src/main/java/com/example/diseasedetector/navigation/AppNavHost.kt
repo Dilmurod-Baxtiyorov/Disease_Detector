@@ -7,12 +7,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.diseasedetector.ui.screens.Login
-import com.example.diseasedetector.ui.screens.NewPassword
 import com.example.diseasedetector.ui.screens.Signup
 import com.example.diseasedetector.ui.screens.Verification
 import com.example.diseasedetector.viewmodel.AuthViewModel
 import com.example.diseasedetector.viewmodel.LoginViewModel
-import com.example.diseasedetector.viewmodel.NewPasswordViewModel
 import com.example.diseasedetector.viewmodel.SignupViewModel
 import com.example.diseasedetector.viewmodel.VerificationViewModel
 import com.example.diseasedetector.viewmodel.viewModelFactory
@@ -32,6 +30,7 @@ fun AppNavHost(
     ) {
         val authViewModel = AuthViewModel(auth, db)
         composable(Routes.Login.name){
+            authViewModel.clearWarning()
             val loginViewModel: LoginViewModel = viewModel(
                 factory = remember(auth, db) {
                     viewModelFactory {
@@ -46,6 +45,7 @@ fun AppNavHost(
             )
         }
         composable(Routes.Signup.name){
+            authViewModel.clearWarning()
             val signupViewModel: SignupViewModel = viewModel(
                 factory = remember(auth, db) {
                     viewModelFactory {
@@ -60,17 +60,17 @@ fun AppNavHost(
             )
         }
         composable(
-            route = Routes.Verification.name + "/{phoneNumber}/{verificationId}/{fullName}/{password}"){ navBackStackEntry ->
+            route = Routes.Verification.name + "/{identifier}/{verificationId}/{fullName}"){ navBackStackEntry ->
             val verificationId = navBackStackEntry.arguments?.getString("verificationId")
-            val phoneNumber = navBackStackEntry.arguments?.getString("phoneNumber")
+            val phoneNumber = navBackStackEntry.arguments?.getString("identifier")
             val fullName = navBackStackEntry.arguments?.getString("fullName")
-            val password = navBackStackEntry.arguments?.getString("password")
 
             val credential = authViewModel.storedCredential
             val resendToken = authViewModel.resendingToken
+            authViewModel.clearWarning()
 
             val verificationViewModel: VerificationViewModel = viewModel(
-                factory = remember(auth, db, verificationId, phoneNumber, fullName, password, credential) {
+                factory = remember(auth, db, verificationId, phoneNumber, fullName, credential) {
                     viewModelFactory {
                         VerificationViewModel(
                             auth = auth,
@@ -78,7 +78,6 @@ fun AppNavHost(
                             verificationId = verificationId,
                             phoneNumber = phoneNumber!!,
                             fullName = fullName,
-                            password = password,
                             credential = credential,
                             resendingToken = resendToken
                         )
@@ -89,23 +88,6 @@ fun AppNavHost(
             Verification(
                 vm = verificationViewModel,
                 navController = navController,
-                phoneNumber = phoneNumber!!
-            )
-        }
-        composable(Routes.NewPassword.name + "/{phoneNumber}"){navBackStackEntry ->
-            val phoneNumber = navBackStackEntry.arguments?.getString("phoneNumber")
-
-            val newPasswordViewmodel : NewPasswordViewModel = viewModel(
-                factory = remember (auth, db){
-                    viewModelFactory {
-                        NewPasswordViewModel(auth, db)
-                    }
-                }
-            )
-
-            NewPassword(
-                navController = navController,
-                vm = newPasswordViewmodel,
                 phoneNumber = phoneNumber!!
             )
         }

@@ -6,6 +6,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.diseasedetector.model.DiseaseViewModel
+import com.example.diseasedetector.ui.screens.AnalysisScreen
+import com.example.diseasedetector.ui.screens.ChatScreen
+import com.example.diseasedetector.ui.screens.MainScreen
+import com.example.diseasedetector.ui.screens.SplashScreen
 import com.example.diseasedetector.ui.screens.Login
 import com.example.diseasedetector.ui.screens.Signup
 import com.example.diseasedetector.ui.screens.Verification
@@ -22,7 +27,8 @@ fun AppNavHost(
     navController: NavHostController,
     auth: FirebaseAuth,
     db: FirebaseFirestore,
-    startDestination: String
+    startDestination: String = NavigationItem.SplashScreen.route,
+    viewModel: DiseaseViewModel = viewModel()
 ){
     NavHost(
         navController = navController,
@@ -44,6 +50,7 @@ fun AppNavHost(
                 authVM = authViewModel
             )
         }
+        
         composable(Routes.Signup.name){
             authViewModel.clearWarning()
             val signupViewModel: SignupViewModel = viewModel(
@@ -59,6 +66,7 @@ fun AppNavHost(
                 authVM = authViewModel
             )
         }
+        
         composable(
             route = Routes.Verification.name + "/{identifier}/{verificationId}/{fullName}"){ navBackStackEntry ->
             val verificationId = navBackStackEntry.arguments?.getString("verificationId")
@@ -90,6 +98,25 @@ fun AppNavHost(
                 navController = navController,
                 phoneNumber = phoneNumber!!
             )
+        }
+        
+        composable(NavigationItem.SplashScreen.route) {
+            SplashScreen(navController)
+        }
+
+        composable(NavigationItem.MainScreen.route) {
+            MainScreen(navController, viewModel)
+        }
+
+        composable("organ/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull()
+            if (id != null) {
+                AnalysisScreen(navController = navController, organId = id, viewModel = viewModel)
+            }
+        }
+
+        composable(NavigationItem.ChatScreen.route) {
+            ChatScreen(navController, viewModel)
         }
     }
 }

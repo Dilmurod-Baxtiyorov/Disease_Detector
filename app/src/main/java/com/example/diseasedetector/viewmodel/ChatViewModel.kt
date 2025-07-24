@@ -4,10 +4,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.diseasedetector.data.model.ChatRequest
 import com.example.diseasedetector.data.repository.ChatRepository
 import com.example.diseasedetector.ui.state.UiState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,9 +13,6 @@ import kotlinx.coroutines.launch
 
 class ChatViewModel: ViewModel() {
     private val chatRep = ChatRepository()
-
-    private var _uiState = MutableStateFlow<UiState>(UiState.Idle)
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     private val _prompt = MutableStateFlow("")
     val prompt: StateFlow<String> = _prompt.asStateFlow()
@@ -42,7 +37,6 @@ class ChatViewModel: ViewModel() {
 
     fun sendRequest(){
         viewModelScope.launch {
-            _uiState.value = UiState.Loading
             history.add("")
             val response = chatRep.sendRequest(history[history.size-2])
             if(response.isNotEmpty()){
@@ -54,7 +48,6 @@ class ChatViewModel: ViewModel() {
             } else{
                 history[history.size-1] = "Error: It seems like servers aren't working. Try again"
             }
-            _uiState.value = UiState.Success
         }
     }
 }

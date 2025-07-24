@@ -1,4 +1,4 @@
-package com.example.diseasedetector.model
+package com.example.diseasedetector.data.model
 
 data class OrganInfo(
     val id: Int,

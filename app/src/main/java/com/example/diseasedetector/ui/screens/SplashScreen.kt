@@ -21,11 +21,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.diseasedetector.R
+import com.example.diseasedetector.data.repository.DataManager
 import com.example.diseasedetector.navigation.Routes
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navController: NavHostController) {
+fun SplashScreen(navController: NavHostController, dataManager: DataManager) {
     val alpha = remember { Animatable(0f) }
     val scale = remember { Animatable(0.8f) }
 
@@ -39,7 +40,11 @@ fun SplashScreen(navController: NavHostController) {
             animationSpec = tween(durationMillis = 1000)
         )
         delay(2000L)
-        navController.navigate(Routes.Signup.name) //change to login or sing up
+        if(!dataManager.getUser().isNullOrEmpty()){
+            navController.navigate(Routes.Main.name)
+        }else {
+            navController.navigate(Routes.Signup.name)
+        }
     }
 
     Scaffold { innerPadding ->

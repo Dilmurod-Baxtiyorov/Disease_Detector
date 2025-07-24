@@ -7,7 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.diseasedetector.navigation.Routes
-import com.example.diseasedetector.repository.AuthRepository
+import com.example.diseasedetector.data.repository.AuthRepository
+import com.example.diseasedetector.data.repository.DataManager
 import com.example.diseasedetector.ui.state.UiEvent
 import com.example.diseasedetector.ui.state.UiState
 import com.google.firebase.auth.FirebaseAuth
@@ -19,7 +20,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class LoginViewModel(auth: FirebaseAuth, db: FirebaseFirestore): ViewModel() {
+class LoginViewModel(
+    private val dataManager: DataManager,
+    auth: FirebaseAuth,
+    db: FirebaseFirestore
+): ViewModel() {
     private val repository = AuthRepository(auth, db)
 
     private val _uiState = mutableStateOf<UiState>(UiState.Idle)
@@ -68,6 +73,7 @@ class LoginViewModel(auth: FirebaseAuth, db: FirebaseFirestore): ViewModel() {
             if(user != null){
                 val firebaseUser = repository.signInWithEmail(email = identifier.value, password = password.value)
                 if(firebaseUser != null){
+                    dataManager.saveUser(user.fullName)
                     _event.emit(UiEvent.Navigate(Routes.Main.name))
                 }else{
                     warning = "password"

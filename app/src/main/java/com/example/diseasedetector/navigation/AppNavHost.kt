@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.diseasedetector.data.repository.DataManager
 import com.example.diseasedetector.viewmodel.DiseaseViewModel
 import com.example.diseasedetector.ui.screens.AnalysisScreen
 import com.example.diseasedetector.ui.screens.ChatScreen
@@ -16,6 +17,7 @@ import com.example.diseasedetector.ui.screens.authentication.Login
 import com.example.diseasedetector.ui.screens.authentication.Signup
 import com.example.diseasedetector.ui.screens.authentication.Verification
 import com.example.diseasedetector.viewmodel.AuthViewModel
+import com.example.diseasedetector.viewmodel.ChatViewModel
 import com.example.diseasedetector.viewmodel.LoginViewModel
 import com.example.diseasedetector.viewmodel.SignupViewModel
 import com.example.diseasedetector.viewmodel.VerificationViewModel
@@ -28,6 +30,7 @@ fun AppNavHost(
     navController: NavHostController,
     auth: FirebaseAuth,
     db: FirebaseFirestore,
+    dataManager: DataManager,
     startDestination: String = Routes.Splash.name,
     application: Application
 ){
@@ -42,7 +45,7 @@ fun AppNavHost(
             val loginViewModel: LoginViewModel = viewModel(
                 factory = remember(auth, db) {
                     viewModelFactory {
-                        LoginViewModel(auth, db)
+                        LoginViewModel(dataManager, auth, db)
                     }
                 }
             )
@@ -52,13 +55,13 @@ fun AppNavHost(
                 authVM = authViewModel
             )
         }
-        
+
         composable(Routes.Signup.name){
             authViewModel.clearWarning()
             val signupViewModel: SignupViewModel = viewModel(
                 factory = remember(auth, db) {
                     viewModelFactory {
-                        SignupViewModel(auth, db)
+                        SignupViewModel(dataManager, auth, db)
                     }
                 }
             )
@@ -68,7 +71,7 @@ fun AppNavHost(
                 authVM = authViewModel
             )
         }
-        
+
         composable(
             route = Routes.Verification.name + "/{identifier}/{verificationId}/{fullName}"){ navBackStackEntry ->
             val verificationId = navBackStackEntry.arguments?.getString("verificationId")
@@ -89,7 +92,8 @@ fun AppNavHost(
                             phoneNumber = phoneNumber!!,
                             fullName = fullName,
                             credential = credential,
-                            resendingToken = resendToken
+                            resendingToken = resendToken,
+                            dataManager = dataManager
                         )
                     }
                 }
@@ -101,9 +105,9 @@ fun AppNavHost(
                 phoneNumber = phoneNumber!!
             )
         }
-        
+
         composable(Routes.Splash.name) {
-            SplashScreen(navController)
+            SplashScreen(navController, dataManager)
         }
         val diseaseViewModel = DiseaseViewModel(application = application)
 
@@ -117,9 +121,13 @@ fun AppNavHost(
                 AnalysisScreen(navController = navController, organId = id, viewModel = diseaseViewModel)
             }
         }
-
+        val chatViewModel = ChatViewModel()
         composable(Routes.Chat.name) {
-            ChatScreen(navController, diseaseViewModel)
+            ChatScreen(
+                navController = navController,
+                diseaseViewModel = diseaseViewModel,
+                vm = chatViewModel
+            )
         }
     }
 }

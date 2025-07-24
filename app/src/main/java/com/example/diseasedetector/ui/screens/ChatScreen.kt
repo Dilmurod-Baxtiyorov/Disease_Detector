@@ -14,7 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.IconButton
@@ -35,15 +39,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.diseasedetector.R
 import com.example.diseasedetector.viewmodel.DiseaseViewModel
 import com.example.diseasedetector.ui.util.SplitFloatingButton
+import com.example.diseasedetector.viewmodel.ChatViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(navController: NavHostController, viewModel: DiseaseViewModel) {
-    val isChatSelected by viewModel.isChatSelected.collectAsState()
+fun ChatScreen(
+    navController: NavHostController,
+    diseaseViewModel: DiseaseViewModel,
+    vm: ChatViewModel
+) {
+    val isChatSelected by diseaseViewModel.isChatSelected.collectAsState()
+    val uiState by vm.uiState.collectAsStateWithLifecycle()
+
+    val prompt by vm.prompt.collectAsStateWithLifecycle()
+    val history = vm.history
+
     Scaffold(
         containerColor = Color.White,
         topBar = {
@@ -78,11 +93,11 @@ fun ChatScreen(navController: NavHostController, viewModel: DiseaseViewModel) {
                 isChatSelected = isChatSelected == true,
                 onChatClick = {
                     navController.navigate("chat")
-                    viewModel.setChatSelected(true)
+                    diseaseViewModel.setChatSelected(true)
                 },
                 onAnalysisClick = {
                     navController.navigate("main")
-                    viewModel.setChatSelected(false)
+                    diseaseViewModel.setChatSelected(false)
                 }
             )
         },
@@ -121,92 +136,120 @@ fun ChatScreen(navController: NavHostController, viewModel: DiseaseViewModel) {
                     .clip(RoundedCornerShape(10.dp))
                     .border(0.3.dp, Color(0x80000000), RoundedCornerShape(10.dp))
                     .background(Color.White)
-                    .padding(16.dp)
+                    .padding(16.dp),
+                contentAlignment = Alignment.BottomCenter
             ) {
-                Column {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .width(168.dp)
-                                .height(80.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(Color(0xFF8D7BFD))
-                                .padding(12.dp)
-                        ) {
-                            Text(
-                                text = "Lorem ipsum is simply dummy text of the printing and typesetting.",
-                                color = Color.White,
-                                fontSize = 10.sp,
-                                lineHeight = 18.sp
-                            )
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(history){
+                        if(it.startsWith("user")){
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(Color(0xFF8D7BFD))
+                                        .padding(12.dp)
+                                ) {
+                                    Text(
+                                        text = it.substring(5),
+                                        color = Color.White,
+                                        fontSize = 18.sp,
+                                        lineHeight = 18.sp
+                                    )
+                                }
+                            }
+                        }else{
+                            if(it == ""){
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(10.dp),
+                                        color = Color.Gray,
+                                        strokeWidth = 2.dp
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "thinking",
+                                        color = Color.Gray,
+                                        fontSize = 12.sp,
+                                        lineHeight = 18.sp
+                                    )
+                                }
+                            }else {
+                                Row(
+                                    verticalAlignment = Alignment.Top
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.robot),
+                                        contentDescription = "Bot",
+                                        modifier = Modifier.size(34.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(15.dp))
+                                            .background(Color(0xFFC2C2C2))
+                                            .padding(12.dp)
+                                    ) {
+                                        Text(
+                                            text = it,
+                                            color = Color.Black,
+                                            fontSize = 18.sp,
+                                            lineHeight = 18.sp
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.robot),
-                            contentDescription = "Bot",
-                            modifier = Modifier.size(34.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Box(
-                            modifier = Modifier
-                                .width(166.dp)
-                                .height(80.dp)
-                                .clip(RoundedCornerShape(15.dp))
-                                .background(Color(0xFFC2C2C2))
-                                .padding(12.dp)
-                        ) {
-                            Text(
-                                text = "Lorem Ipsum is simply dummy text of the printing and typesetting.",
-                                color = Color.Black,
-                                fontSize = 10.sp,
-                                lineHeight = 18.sp
-                            )
-                        }
+                    item {
+                        Spacer(modifier = Modifier.height(48.dp))
                     }
-
-                    Spacer(modifier = Modifier.height(200.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-
-                    ) {
-                        TextField(
-                            modifier = Modifier.fillMaxWidth()
-                                .clip(RoundedCornerShape(15.dp))
-                                .border(0.3.dp, Color(0x80000000), RoundedCornerShape(15.dp)),
-                            value = "",
-                            onValueChange = {},
-                            placeholder = {
-                                Text(
-                                    text = "Write a message...",
-                                    color = Color.Gray
-                                )
-                            },
-                            colors = TextFieldDefaults.colors(
-                                    focusedContainerColor = Color.White,
-                                    unfocusedContainerColor = Color.White,
-                                    disabledContainerColor = Color.White,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent
-                                ),
-                            trailingIcon = {
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextField(
+                        modifier = Modifier.fillMaxWidth()
+                            .clip(RoundedCornerShape(15.dp))
+                            .border(0.3.dp, Color(0x80000000), RoundedCornerShape(15.dp)),
+                        value = prompt,
+                        onValueChange = vm::onPromptChange,
+                        placeholder = {
+                            Text(
+                                text = "Write a message...",
+                                color = Color.Gray
+                            )
+                        },
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
+                            disabledContainerColor = Color.White,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    vm.onHistoryChange(prompt, "user")
+                                    vm.onPromptChange("")
+                                    vm.sendRequest()
+                                }
+                            ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.send),
                                     contentDescription = "Send",
                                 )
                             }
-                        )
-                    }
+                        }
+                    )
                 }
             }
         }

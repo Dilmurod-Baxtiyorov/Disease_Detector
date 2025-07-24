@@ -5,7 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import com.example.diseasedetector.R
-import com.example.diseasedetector.model.OrganInfo
+import com.example.diseasedetector.data.model.OrganInfo
 
 class DiseaseViewModel(application: Application) : AndroidViewModel(application) {
     private val _organs = listOf(

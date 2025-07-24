@@ -1,10 +1,10 @@
-package com.example.diseasedetector.repository
+package com.example.diseasedetector.data.repository
 
 import android.content.ContentValues.TAG
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
 import android.util.Log
-import com.example.diseasedetector.model.User
+import com.example.diseasedetector.data.model.User
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -14,8 +14,10 @@ import com.google.firebase.firestore.toObjects
 import kotlinx.coroutines.tasks.await
 import java.time.Instant
 
-class AuthRepository(private val auth: FirebaseAuth, private val db: FirebaseFirestore) {
-
+class AuthRepository(
+    private val auth: FirebaseAuth,
+    private val db: FirebaseFirestore
+) {
     private val userRef = db.collection("users")
     private val quotaRef = db.collection("smsQuota").document("global")
 
@@ -129,5 +131,4 @@ class AuthRepository(private val auth: FirebaseAuth, private val db: FirebaseFir
             false
         }
     }
-
 }

@@ -18,4 +18,7 @@ fun main(){
     if (phoneNumber.matches(Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}\$"))){
         println(true)
     }
+
+    val map = mutableMapOf("s" to "yes", "h" to "x")
+    println(map.toList()[0].first)
 }

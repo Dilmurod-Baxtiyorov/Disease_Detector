@@ -62,8 +62,12 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore.ktx)
-    implementation (libs.recaptcha)
+    implementation(libs.recaptcha)
 
     //navigation
     implementation(libs.androidx.navigation.compose)
+
+    //retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 }

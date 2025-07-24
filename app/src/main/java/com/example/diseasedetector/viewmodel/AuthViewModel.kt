@@ -10,7 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.diseasedetector.navigation.Routes
-import com.example.diseasedetector.repository.AuthRepository
+import com.example.diseasedetector.data.repository.AuthRepository
 import com.example.diseasedetector.ui.state.UiEvent
 import com.example.diseasedetector.ui.state.UiState
 import com.google.firebase.FirebaseException

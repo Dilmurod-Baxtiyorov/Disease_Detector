@@ -7,9 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.diseasedetector.model.User
+import com.example.diseasedetector.data.model.User
 import com.example.diseasedetector.navigation.Routes
-import com.example.diseasedetector.repository.AuthRepository
+import com.example.diseasedetector.data.repository.AuthRepository
+import com.example.diseasedetector.data.repository.DataManager
 import com.example.diseasedetector.ui.state.UiEvent
 import com.example.diseasedetector.ui.state.UiState
 import com.google.firebase.auth.FirebaseAuth
@@ -24,7 +25,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class SignupViewModel(private val auth: FirebaseAuth, private val db: FirebaseFirestore): ViewModel() {
+class SignupViewModel(
+    private val dataManager: DataManager,
+    auth: FirebaseAuth,
+    db: FirebaseFirestore
+): ViewModel() {
     private val repository = AuthRepository(auth, db)
 
     private var _uiState = MutableStateFlow<UiState>(UiState.Idle)
@@ -118,7 +123,7 @@ class SignupViewModel(private val auth: FirebaseAuth, private val db: FirebaseFi
         }
     }
 
-    fun isEmailVerified() {
+    fun isEmailVerified(){
         viewModelScope.launch {
             var boolean = true
             while (boolean) {
@@ -133,6 +138,7 @@ class SignupViewModel(private val auth: FirebaseAuth, private val db: FirebaseFi
                             identifier = identifier.value,
                         )
                     )
+                    dataManager.saveUser(fullName.value)
                     _event.emit(UiEvent.Navigate(Routes.Main.name))
                     boolean = false
                 }else{

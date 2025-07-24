@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.diseasedetector.navigation.AppNavHost
 import androidx.navigation.compose.rememberNavController
+import com.example.diseasedetector.data.repository.DataManager
 import com.example.diseasedetector.ui.theme.DiseaseDetectorTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -18,7 +19,7 @@ class MainActivity : ComponentActivity() {
         val db = Firebase.firestore
         val auth = FirebaseAuth.getInstance()
         auth.setLanguageCode("uz")
-
+        val dataManager = DataManager(this)
         setContent {
             val navController = rememberNavController()
             DiseaseDetectorTheme {
@@ -26,6 +27,7 @@ class MainActivity : ComponentActivity() {
                       navController = navController,
                       auth = auth,
                       db = db,
+                      dataManager = dataManager,
                       application = application
                   )
             }

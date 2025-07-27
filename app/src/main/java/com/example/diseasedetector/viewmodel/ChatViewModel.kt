@@ -39,19 +39,18 @@ class ChatViewModel: ViewModel() {
             history.add("")
             var response = chatRep.sendRequest(history[history.size-2])
             var a = 0
-            while(a<2 || response.startsWith("Error:")) {
+            while(a<2 && response.startsWith("Error:")) {
                 a++
                 response = chatRep.sendRequest(history[history.size-2])
-                if(response.isNotEmpty()){
-                    if(response.startsWith("chat:")){
-                        history[history.size-1] = response.substring(5)
-                    }
-                } else{
-                    history[history.size-1] = "Error: It seems like servers aren't working. Try again"
-                }
             }
-            if(history[history.size-1] == ""){
-                history[history.size-1] = response
+            if(response.isNotEmpty()){
+                if(response.startsWith("chat:")){
+                    history[history.size-1] = response.substring(5)
+                }else{
+                    history[history.size-1] = response
+                }
+            } else{
+                history[history.size-1] = "Error: It seems like servers aren't working. Try again"
             }
         }
     }

@@ -43,7 +43,7 @@ android {
 
 dependencies {
 
-    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation(libs.coil.compose)
 
     implementation(libs.tensorflow.lite)
     implementation(libs.tensorflow.lite.gpu)

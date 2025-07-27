@@ -72,7 +72,6 @@ class DiseaseViewModel(application: Application) : AndroidViewModel(application)
             _isChatSelected.value = isChatStart
         }
     }
-
     private val _selectedImageUri = MutableStateFlow<Uri?>(null)
     val selectedImageUri = _selectedImageUri.asStateFlow()
 
@@ -183,5 +182,4 @@ class DiseaseViewModel(application: Application) : AndroidViewModel(application)
         val result = pneumoniaClassify(context, bitmap)
         _tbResult.value = result
     }
-
 }

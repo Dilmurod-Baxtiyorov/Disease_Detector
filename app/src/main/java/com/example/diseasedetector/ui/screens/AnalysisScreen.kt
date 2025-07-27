@@ -252,7 +252,6 @@ fun AnalysisScreen(navController: NavHostController, organId: Int, viewModel: Di
                             }
                         }
                     }
-
                 }
             } else {
                 Text("Organ not found", modifier = Modifier.padding(16.dp))

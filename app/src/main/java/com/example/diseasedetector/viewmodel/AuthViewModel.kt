@@ -4,14 +4,13 @@ import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.diseasedetector.navigation.Routes
-import com.example.diseasedetector.repository.AuthRepository
+import com.example.diseasedetector.data.repository.AuthRepository
 import com.example.diseasedetector.ui.state.UiEvent
 import com.example.diseasedetector.ui.state.UiState
 import com.google.firebase.FirebaseException
@@ -50,24 +49,46 @@ class AuthViewModel(private val auth: FirebaseAuth, private val db: FirebaseFire
     private val _phoneNumber = MutableStateFlow<String?>(null)
     val phoneNumber: StateFlow<String?> = _phoneNumber.asStateFlow()
 
-    private val _password = MutableStateFlow<String?>(null)
-    val password: StateFlow<String?> = _password.asStateFlow()
+    var warning by mutableStateOf("")
+        private set
 
-    fun verifyPhoneNumber(context: Context, phoneNumber: String, fullName: String? = null, password: String? = null){
+    fun clearWarning(){
+        warning = ""
+    }
+
+    fun verifyPhoneNumber(context: Context, phoneNumber: String, fullName: String? = null){
         viewModelScope.launch {
             _uiState.value = UiState.Loading
             _phoneNumber.value = phoneNumber
-            _password.value = password
             _fullName.value = fullName
-            if(repository.getUserByPhoneNumber(phoneNumber) == null || fullName == null){
-                val options = PhoneAuthOptions.newBuilder(auth)
-                    .setPhoneNumber(phoneNumber)
-                    .setTimeout(120L, TimeUnit.SECONDS)
-                    .setActivity(context as Activity)
-                    .setCallbacks(callbacks)
-                PhoneAuthProvider.verifyPhoneNumber(options.build())
+            if(repository.incrementGlobalSmsCountIfAllowed()){
+                if(fullName == null){
+                    if(repository.getUserByIdentifier(phoneNumber) != null){
+                        val options = PhoneAuthOptions.newBuilder(auth)
+                            .setPhoneNumber(phoneNumber)
+                            .setTimeout(120L, TimeUnit.SECONDS)
+                            .setActivity(context as Activity)
+                            .setCallbacks(callbacks)
+                        PhoneAuthProvider.verifyPhoneNumber(options.build())
+                    }else{
+                        warning = "exist"
+                        _uiState.value = UiState.Idle
+                    }
+                }else{
+                    if(repository.getUserByIdentifier(phoneNumber) == null){
+                        val options = PhoneAuthOptions.newBuilder(auth)
+                            .setPhoneNumber(phoneNumber)
+                            .setTimeout(120L, TimeUnit.SECONDS)
+                            .setActivity(context as Activity)
+                            .setCallbacks(callbacks)
+                        PhoneAuthProvider.verifyPhoneNumber(options.build())
+                    }else{
+                        warning = "exist"
+                        _uiState.value = UiState.Idle
+                    }
+                }
             }else{
-                Toast.makeText(context, "This phone number is registered", Toast.LENGTH_SHORT).show()
+                warning = "quota"
                 _uiState.value = UiState.Idle
             }
         }
@@ -78,9 +99,8 @@ class AuthViewModel(private val auth: FirebaseAuth, private val db: FirebaseFire
         override fun onVerificationCompleted(credential: PhoneAuthCredential) {
             Log.d(TAG, "onVerificationCompleted:$credential")
             viewModelScope.launch {
-                _uiState.value = UiState.Success
                 storedCredential = credential
-                _event.emit(UiEvent.Navigate("${Routes.Verification.name}/${phoneNumber.value}/${null}/${fullName.value}/${password.value}"))
+                _event.emit(UiEvent.Navigate("${Routes.Verification.name}/${phoneNumber.value}/${null}/${fullName.value}"))
             }
         }
 
@@ -106,8 +126,7 @@ class AuthViewModel(private val auth: FirebaseAuth, private val db: FirebaseFire
             resendingToken = token
 
             viewModelScope.launch {
-                _event.emit(UiEvent.Navigate("${Routes.Verification.name}/${phoneNumber.value}/$verificationId/${fullName.value}/${password.value}"))
-                _uiState.value = UiState.Success
+                _event.emit(UiEvent.Navigate("${Routes.Verification.name}/${phoneNumber.value}/$verificationId/${fullName.value}"))
             }
 
         }

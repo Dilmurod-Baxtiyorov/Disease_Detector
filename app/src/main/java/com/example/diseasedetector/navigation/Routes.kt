@@ -6,7 +6,7 @@ enum class Routes {
     Signup,
     Verification,
     Main,
-    Analysis,
+    Organ,
     Chat
 }
 
@@ -16,6 +16,6 @@ sealed class Screen(val route: String){
     data object Verification: Screen(Routes.Verification.name)
     data object SplashScreen: Screen(Routes.Splash.name)
     data object MainScreen: Screen(Routes.Main.name)
-    data object AnalysisScreen: Screen(Routes.Analysis.name)
+    data object AnalysisScreen: Screen(Routes.Organ.name)
     data object ChatScreen: Screen(Routes.Chat.name)
 }

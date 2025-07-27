@@ -115,12 +115,13 @@ fun AppNavHost(
             MainScreen(navController, diseaseViewModel)
         }
 
-        composable("${Routes.Analysis.name}/{id}") { backStackEntry ->
+        composable("organ/{id}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")?.toIntOrNull()
             if (id != null) {
                 AnalysisScreen(navController = navController, organId = id, viewModel = diseaseViewModel)
             }
         }
+
         val chatViewModel = ChatViewModel()
         composable(Routes.Chat.name) {
             ChatScreen(
